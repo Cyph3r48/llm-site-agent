@@ -1,0 +1,25 @@
+services:
+  structured64-agent:
+    build: .
+    container_name: structured64-agent
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - LEADS_FILE=/data/leads.jsonl
+    volumes:
+      - /root/.hermes/leads:/data
+    networks:
+      - n8n_default
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=n8n_default
+      - traefik.http.routers.structured64-agent.rule=Host(`agent.structured64.site`)
+      - traefik.http.routers.structured64-agent.tls=true
+      - traefik.http.routers.structured64-agent.entrypoints=web,websecure
+      - traefik.http.routers.structured64-agent.tls.certresolver=sitenew
+      - traefik.http.services.structured64-agent.loadbalancer.server.port=8000
+
+networks:
+  n8n_default:
+    external: true
